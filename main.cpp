@@ -1,510 +1,117 @@
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <string>
-#include <cmath>
-#include "RenderWindow.hpp"
-#include <iostream>
-using namespace std;
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+#include "Baseobject.h"
+#include "CommonFunc.h"
+#include "game_map.h"
+#include "MainObject.h"
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
-//Button constants
-const int BUTTON_WIDTH = 300;
-const int BUTTON_HEIGHT = 200;
-const int TOTAL_BUTTONS = 4;
-
-enum LButtonSprite
+Uint32 frameStart;
+int frameTime;
+BaseObject layer1, layer2, layer3;
+MainObject p_player;
+bool InitData()
 {
-	BUTTON_SPRITE_MOUSE_OUT = 0,
-	BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
-	BUTTON_SPRITE_MOUSE_DOWN = 2,
-	BUTTON_SPRITE_MOUSE_UP = 3,
-	BUTTON_SPRITE_TOTAL = 4
-};
-
-//Texture wrapper class
-class LTexture
-{
-	public:
-		//Initializes variables
-		LTexture();
-
-		//Deallocates memory
-		~LTexture();
-
-		//Loads image at specified path
-		bool loadFromFile( std::string path );
-		
-		#if defined(SDL_TTF_MAJOR_VERSION)
-		//Creates image from font string
-		bool loadFromRenderedText( std::string textureText, SDL_Color textColor );
-		#endif
-		
-		//Deallocates texture
-		void free();
-
-		//Set color modulation
-		void setColor( Uint8 red, Uint8 green, Uint8 blue );
-
-		//Set blending
-		void setBlendMode( SDL_BlendMode blending );
-
-		//Set alpha modulation
-		void setAlpha( Uint8 alpha );
-		
-		//Renders texture at given point
-		void render( int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE );
-
-		//Gets image dimensions
-		int getWidth();
-		int getHeight();
-
-	private:
-		//The actual hardware texture
-		SDL_Texture* mTexture;
-
-		//Image dimensions
-		int mWidth;
-		int mHeight;
-};
-
-//The mouse button
-class LButton
-{
-	public:
-		//Initializes internal variables
-		LButton();
-
-		//Sets top left position
-		void setPosition( int x, int y );
-
-		//Handles mouse event
-		void handleEvent( SDL_Event* e );
-	
-		//Shows button sprite
-		void render();
-
-	private:
-		//Top left position
-		SDL_Point mPosition;
-
-		//Currently used global sprite
-		LButtonSprite mCurrentSprite;
-};
-
-//Starts up SDL and creates window
-bool init();
-
-//Loads media
-bool loadMedia();
-
-//Frees media and shuts down SDL
-void close();
-
-//The window we'll be rendering to
-SDL_Window* gWindow = NULL;
-
-//The window renderer
-SDL_Renderer* gRenderer = NULL;
-
-//Mouse button sprites
-SDL_Rect gSpriteClips[ BUTTON_SPRITE_TOTAL ];
-LTexture gButtonSpriteSheetTexture;
-
-//Buttons objects
-LButton gButtons[ TOTAL_BUTTONS ]; 
-
-LTexture::LTexture()
-{
-	//Initialize
-	mTexture = NULL;
-	mWidth = 0;
-	mHeight = 0;
-}
-
-LTexture::~LTexture()
-{
-	//Deallocate
-	free();
-}
-
-bool LTexture::loadFromFile( std::string path )
-{
-	//Get rid of preexisting texture
-	free();
-
-	//The final texture
-	SDL_Texture* newTexture = NULL;
-
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-	if( loadedSurface == NULL )
-	{
-		printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-	}
-	else
-	{
-		//Color key image
-		SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, 0, 0xFF, 0xFF ) );
-
-		//Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
-		if( newTexture == NULL )
-		{
-			printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = loadedSurface->w;
-			mHeight = loadedSurface->h;
-		}
-
-		//Get rid of old loaded surface
-		SDL_FreeSurface( loadedSurface );
-	}
-
-	//Return success
-	mTexture = newTexture;
-	return mTexture != NULL;
-}
-
-#if defined(SDL_TTF_MAJOR_VERSION)
-bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColor )
-{
-	//Get rid of preexisting texture
-	free();
-
-	//Render text surface
-	SDL_Surface* textSurface = TTF_RenderText_Solid( gFont, textureText.c_str(), textColor );
-	if( textSurface == NULL )
-	{
-		printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
-	}
-	else
-	{
-		//Create texture from surface pixels
-        mTexture = SDL_CreateTextureFromSurface( gRenderer, textSurface );
-		if( mTexture == NULL )
-		{
-			printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = textSurface->w;
-			mHeight = textSurface->h;
-		}
-
-		//Get rid of old surface
-		SDL_FreeSurface( textSurface );
-	}
-	
-	//Return success
-	return mTexture != NULL;
-}
-#endif
-
-void LTexture::free()
-{
-	//Free texture if it exists
-	if( mTexture != NULL )
-	{
-		SDL_DestroyTexture( mTexture );
-		mTexture = NULL;
-		mWidth = 0;
-		mHeight = 0;
-	}
-}
-
-void LTexture::setColor( Uint8 red, Uint8 green, Uint8 blue )
-{
-	//Modulate texture rgb
-	SDL_SetTextureColorMod( mTexture, red, green, blue );
-}
-
-void LTexture::setBlendMode( SDL_BlendMode blending )
-{
-	//Set blending function
-	SDL_SetTextureBlendMode( mTexture, blending );
-}
-		
-void LTexture::setAlpha( Uint8 alpha )
-{
-	//Modulate texture alpha
-	SDL_SetTextureAlphaMod( mTexture, alpha );
-}
-
-void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip )
-{
-	//Set rendering space and render to screen
-	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-
-	//Set clip rendering dimensions
-	if( clip != NULL )
-	{
-		renderQuad.w = clip->w;
-		renderQuad.h = clip->h;
-	}
-
-	//Render to screen
-	SDL_RenderCopyEx( gRenderer, mTexture, clip, &renderQuad, angle, center, flip );
-}
-
-int LTexture::getWidth()
-{
-	return mWidth;
-}
-
-int LTexture::getHeight()
-{
-	return mHeight;
-}
-
-LButton::LButton()
-{
-	mPosition.x = 0;
-	mPosition.y = 0;
-
-	mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
-}
-
-void LButton::setPosition( int x, int y )
-{
-	mPosition.x = x;
-	mPosition.y = y;
-}
-
-void LButton::handleEvent( SDL_Event* e )
-{
-	//If mouse event happened
-	if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
-	{
-		//Get mouse position
-		int x, y;
-		SDL_GetMouseState( &x, &y );
-
-		//Check if mouse is in button
-		bool inside = true;
-
-		//Mouse is left of the button
-		if( x < mPosition.x )
-		{
-			inside = false;
-		}
-		//Mouse is right of the button
-		else if( x > mPosition.x + BUTTON_WIDTH )
-		{
-			inside = false;
-		}
-		//Mouse above the button
-		else if( y < mPosition.y )
-		{
-			inside = false;
-		}
-		//Mouse below the button
-		else if( y > mPosition.y + BUTTON_HEIGHT )
-		{
-			inside = false;
-		}
-
-		//Mouse is outside button
-		if( !inside )
-		{
-			mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
-		}
-		//Mouse is inside button
-		else
-		{
-			//Set mouse over sprite
-			switch( e->type )
-			{
-				case SDL_MOUSEMOTION:
-				mCurrentSprite = BUTTON_SPRITE_MOUSE_OVER_MOTION;
-				break;
-			
-				case SDL_MOUSEBUTTONDOWN:
-				mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
-				break;
-				
-				case SDL_MOUSEBUTTONUP:
-				mCurrentSprite = BUTTON_SPRITE_MOUSE_UP;
-				break;
-			}
-		}
-	}
-}
-	
-void LButton::render()
-{
-	//Show current button sprite
-	gButtonSpriteSheetTexture.render( mPosition.x, mPosition.y, &gSpriteClips[ mCurrentSprite ] );
-}
-
-bool init()
-{
-	//Initialization flag
 	bool success = true;
+	int ret = SDL_Init(SDL_INIT_VIDEO);
+	if(ret < 0){
+		return false;
+	}
 
-	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-	{
-		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,"1");
+
+	g_window = SDL_CreateWindow("Game v1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	if (!g_window){
 		success = false;
 	}
-	else
+    else
 	{
-		//Set texture filtering to linear
-		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
-		{
-			printf( "Warning: Linear texture filtering not enabled!" );
-		}
-
-		//Create window
-		gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
-		if( gWindow == NULL )
-		{
-			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
-			success = false;
-		}
-		else
-		{
-			//Create vsynced renderer for window
-			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-			if( gRenderer == NULL )
-			{
-				printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
-				success = false;
-			}
-			else
-			{
-				//Initialize renderer color
-				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-
-				//Initialize PNG loading
-				int imgFlags = IMG_INIT_PNG;
-				if( !( IMG_Init( imgFlags ) & imgFlags ) )
-				{
-					printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
-					success = false;
-				}
-			}
-		}
-	}
-
-	return success;
-}
-
-bool loadMedia()
-{
-	//Loading success flag
-	bool success = true;
-
-	//Load sprites
-	if( !gButtonSpriteSheetTexture.loadFromFile( "img/button.png" ) )
-	{
-		printf( "Failed to load button sprite texture!\n" );
+    g_screen =  SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
+    if(!g_screen){
 		success = false;
 	}
-	else
-	{
-		//Set sprites
-		for( int i = 0; i < BUTTON_SPRITE_TOTAL; ++i )
-		{
-			gSpriteClips[ i ].x = 0;
-			gSpriteClips[ i ].y = i * 200;
-			gSpriteClips[ i ].w = BUTTON_WIDTH;
-			gSpriteClips[ i ].h = BUTTON_HEIGHT;
-		}
-
-		//Set buttons in corners
-		gButtons[ 0 ].setPosition( 0, 0 );
-		gButtons[ 1 ].setPosition( SCREEN_WIDTH - BUTTON_WIDTH, 0 );
-		gButtons[ 2 ].setPosition( 0, SCREEN_HEIGHT - BUTTON_HEIGHT );
-		gButtons[ 3 ].setPosition( SCREEN_WIDTH - BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT );
+	else{
+		SDL_SetRenderDrawColor(g_screen,RENDER_DRAW_COLOR,RENDER_DRAW_COLOR,RENDER_DRAW_COLOR,RENDER_DRAW_COLOR);
 	}
-
-	return success;
+	}
+  return success;
 }
+void LoadAndStretchLayers(SDL_Renderer* renderer, BaseObject& layer1, BaseObject& layer2, BaseObject& layer3, int screenWidth, int screenHeight) {
+    
+    layer1.LoadImg("img/background_layer_1.png", renderer);
+    layer2.LoadImg("img/background_layer2.png", renderer);
+    layer3.LoadImg("img/background_layer3.png", renderer);
 
+  
+    layer1.rect_.w = SCREEN_WIDTH;
+    layer1.rect_.h = SCREEN_HEIGHT;
+
+    layer2.rect_.w = SCREEN_WIDTH;
+    layer2.rect_.h = SCREEN_HEIGHT;
+
+    layer3.rect_.w = SCREEN_WIDTH;
+    layer3.rect_.h = SCREEN_HEIGHT;
+}
 void close()
 {
-	//Free loaded images
-	gButtonSpriteSheetTexture.free();
-
-	//Destroy window	
-	SDL_DestroyRenderer( gRenderer );
-	SDL_DestroyWindow( gWindow );
-	gWindow = NULL;
-	gRenderer = NULL;
-
-	//Quit SDL subsystems
+	layer1.Free();
+  layer2.Free();
+  layer3.Free();
+	SDL_DestroyRenderer(g_screen);
+	g_screen = NULL;
+	SDL_DestroyWindow(g_window);
+	g_window=NULL;
 	IMG_Quit();
 	SDL_Quit();
 }
+ int main(int argc, char* argv[]) {
+    if (InitData() == false)
+        return -1;
+    p_player.LoadImg("img/player_right.png", g_screen);
+    p_player.set_clips();
+    GameMap game_map;
+    game_map.LoadMap("map/map01.dat");
+    game_map.LoadTiles(g_screen);
 
-int main( int argc, char* args[] )
-{
-	//Start up SDL and create window
-	if( !init() )
-	{
-		printf( "Failed to initialize!\n" );
-	}
-	else
-	{
-		//Load media
-		if( !loadMedia() )
-		{
-			printf( "Failed to load media!\n" );
-		}
-		else
-		{	
-			//Main loop flag
-			bool quit = false;
+    LoadAndStretchLayers(g_screen, layer1, layer2, layer3, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-			//Event handler
-			SDL_Event e;
+    bool is_quit = false;
+    Uint32 frameStart;
+    int frameTime;
 
-			//While application is running
-			while( !quit )
-			{
-				//Handle events on queue
-				while( SDL_PollEvent( &e ) != 0 )
-				{
-					//User requests quit
-					if( e.type == SDL_QUIT )
-					{
-						quit = true;
-					}
-					
-					//Handle button events
-					for( int i = 0; i < TOTAL_BUTTONS; ++i )
-					{
-						gButtons[ i ].handleEvent( &e );
-					}
-				}
+    while (!is_quit) {
+        frameStart = SDL_GetTicks();
 
-				//Clear screen
-				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-				SDL_RenderClear( gRenderer );
+        while (SDL_PollEvent(&g_event) != 0) {
+            if (g_event.type == SDL_QUIT) {
+                is_quit = true;
+            }
+            p_player.HandleInputAction(g_event, g_screen);
+        }
 
-				//Render buttons
-				for( int i = 0; i < TOTAL_BUTTONS; ++i )
-				{
-					gButtons[ i ].render();
-				}
+        SDL_SetRenderDrawColor(g_screen, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
+        SDL_RenderClear(g_screen);
 
-				//Update screen
-				SDL_RenderPresent( gRenderer );
-			}
-		}
-	}
+        layer1.Render(g_screen);
+        layer2.Render(g_screen);
+        layer3.Render(g_screen);
 
-	//Free resources and close SDL
-	close();
+        game_map.DrawMap(g_screen);
+        Map map_data = game_map.getMap();
 
-	return 0;
+        p_player.SetMapXY(map_data.start_x_,map_data.start_y_);
+        p_player.DoPlayer(map_data);
+        p_player.Show(g_screen);
+        SDL_RenderPresent(g_screen);
+        game_map.SetMap(map_data);
+        
+        
+        frameTime = SDL_GetTicks() - frameStart;
+        if (frameTime < SCREEN_TICKS_PER_FRAME) {
+            SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTime);
+        }
+    }
+
+    close();
+    return 0;
 }
