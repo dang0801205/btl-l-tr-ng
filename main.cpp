@@ -2,6 +2,7 @@
 #include "Baseobject.h"
 #include "CommonFunc.h"
 #include "game_map.h"
+#include "ImpTimer.h"
 #include "MainObject.h"
 const int SCREEN_FPS = 60;
 const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
@@ -102,6 +103,7 @@ void close()
         p_player.SetMapXY(map_data.start_x_,map_data.start_y_);
         p_player.DoPlayer(map_data);
         p_player.Show(g_screen);
+        
         SDL_RenderPresent(g_screen);
         game_map.SetMap(map_data);
         

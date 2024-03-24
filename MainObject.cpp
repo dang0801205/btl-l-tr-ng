@@ -94,16 +94,18 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
                 break;
         }
     }
+	if(events.type == SDL_MOUSEBUTTONDOWN)
+	{
+		if(events.button.button == SDL_BUTTON_RIGHT){
+			input_type.jump_ = 1;
+		}
+	}
 }
 
 void MainObject::DoPlayer(Map& map_data) {
     x_val_ = 0;
     y_val_ += 0.8;
-    if(y_val_ >= MAX_FALL_SPEED)
-		{
-			y_val_ = MAX_FALL_SPEED;
-		}
-		if(input_type.left_ == 1)
+    if(input_type.left_ == 1)
 		{
 			x_val_ -= PLAYER_SPEED;
 		}
@@ -111,10 +113,20 @@ void MainObject::DoPlayer(Map& map_data) {
 		{
 			x_val_ += PLAYER_SPEED;
 		}
+		if(input_type.jump_  == 1)
+		{
+			if(on_ground  == true)
+			{
+				y_val_ = - JUMP_VAL;
+			}
+			on_ground = false;
+			input_type.jump_ = 0;
+		}
 
-    CheckToMap(map_data);
-	CenterEntityOnMap(map_data);
-}
+
+		CheckToMap(map_data);
+		CenterEntityOnMap(map_data);
+	}
    void MainObject::CenterEntityOnMap(Map& map_data)
 {
 	map_data.start_x_ = x_pos_ - (SCREEN_WIDTH/2);
