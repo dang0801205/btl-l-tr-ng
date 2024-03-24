@@ -11,6 +11,7 @@ static SDL_Window* g_window;
 static SDL_Renderer* g_screen;
 static SDL_Event g_event;
 
+const int FRAME_PER_SECOND = 25;
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 600;
 const int SCREEN_BPT = 32;

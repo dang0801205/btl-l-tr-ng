@@ -4,7 +4,7 @@
 #include "CommonFunc.h"
 #include "BaseObject.h"
 #include "game_map.h"
-
+#include "ImpTimer.h"
 #define GRAVITY_SPEED 0.8
 #define MAX_FALL_SPEED 10
 #define PLAYER_SPEED 8
@@ -46,6 +46,12 @@ public:
     
     int map_x_;
     int map_y_;
+
+    int idle_frame_counter_;
+    int idle_animation_delay_;
+
+    int come_back_time;
+    
 };
 
 #endif
