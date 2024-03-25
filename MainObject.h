@@ -47,8 +47,7 @@ public:
     int map_x_;
     int map_y_;
 
-    int idle_frame_counter_;
-    int idle_animation_delay_;
+   
 
     int come_back_time;
     

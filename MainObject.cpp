@@ -19,8 +19,7 @@ MainObject::MainObject() {
     on_ground = false;
 	map_x_ = 0;
 	map_y_ = 0;
-	idle_frame_counter_ = 0; 
-    idle_animation_delay_ = 10; 
+	
 	come_back_time = 0;
     
 }
@@ -53,41 +52,23 @@ void MainObject::set_clips() {
 }
 
 void MainObject::Show(SDL_Renderer* des) {
-    
-    std::string imagePath;
-    if (status_ == WALK_LEFT) {
-        imagePath = "img/player_left.png";
-    } else if (status_ == WALK_RIGHT) {
-        imagePath = "img/player_right.png";
-    } else {
-        
-        imagePath = "img/player_right.png";
-    }
-
-    
+    std::string imagePath = (status_ == WALK_LEFT) ? "img/player_left.png" : "img/player_right.png";
     LoadImg(imagePath, des);
 
-    
     if (input_type.left_ || input_type.right_) {
         ++frame_;
     } else {
-       
-        frame_ = 4; 
+        frame_ = 0;
     }
 
-   
     frame_ = (frame_ >= 8) ? 0 : frame_;
 
-    
     SDL_Rect r;
     get_rect(r);
     r.x = x_pos_ - map_x_;
     r.y = y_pos_ - map_y_;
 
-   
     SDL_Rect* current_clip = &frame_clip_[frame_];
-
-   
     SDL_Rect renderQuad = {r.x, r.y, width_frame_, height_frame_};
     SDL_RenderCopy(des, p_object_, current_clip, &renderQuad);
 }
@@ -106,8 +87,7 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
                 input_type.right_ = 0;
                 break;
         }
-    } 
-	else if (events.type == SDL_KEYUP) {
+    } else if (events.type == SDL_KEYUP) {
         switch (events.key.keysym.sym) {
             case SDLK_RIGHT:
                 input_type.right_ = 0;
@@ -117,12 +97,12 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
                 break;
         }
     }
-	if(events.type == SDL_MOUSEBUTTONDOWN)
-	{
-		if(events.button.button == SDL_BUTTON_RIGHT){
-			input_type.jump_ = 1;
-		}
-	}
+	if(events.type == SDL_KEYDOWN) {
+    if(events.key.keysym.sym == SDLK_UP) {
+        input_type.jump_ = 1;
+    }
+}
+
 }
 
 void MainObject::DoPlayer(Map& map_data) {
@@ -193,7 +173,7 @@ void MainObject::DoPlayer(Map& map_data) {
 
 
 }
-    void MainObject::CheckToMap(Map& map_data)
+     void MainObject::CheckToMap(Map& map_data)
 {
 	int x1 = 0;
 	int x2 = 0;
