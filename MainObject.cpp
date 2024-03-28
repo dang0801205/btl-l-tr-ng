@@ -34,7 +34,7 @@ bool MainObject::LoadImg(std::string path, SDL_Renderer* screen) {
         SDL_Rect r;
         get_rect(r);
         width_frame_ = r.w / 8;
-        height_frame_ = r.h;
+        height_frame_ = r.h/1.2;
     }
 
     return ret;
@@ -52,7 +52,7 @@ void MainObject::set_clips() {
 }
 
 void MainObject::Show(SDL_Renderer* des) {
-    std::string imagePath = (status_ == WALK_LEFT) ? "img/player_left.png" : "img/player_right.png";
+    std::string imagePath = (status_ == WALK_LEFT) ? "img/run_left.png" : "img/fixed_right.png";
     LoadImg(imagePath, des);
 
     if (input_type.left_ || input_type.right_) {
