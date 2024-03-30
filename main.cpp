@@ -4,6 +4,7 @@
 #include "game_map.h"
 #include "ImpTimer.h"
 #include "MainObject.h"
+#include "BulletObject.h"
 const int SCREEN_FPS = 60;
 const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
@@ -68,7 +69,7 @@ void close()
  int main(int argc, char* argv[]) {
     if (InitData() == false)
         return -1;
-    p_player.LoadImg("img/fixed_right.png", g_screen);
+    p_player.LoadImg("img/r.png", g_screen);
     p_player.set_clips();
     GameMap game_map;
     game_map.LoadMap("map/map01.dat");
@@ -99,10 +100,12 @@ void close()
 
         game_map.DrawMap(g_screen);
         Map map_data = game_map.getMap();
-
+    
+        
         p_player.SetMapXY(map_data.start_x_,map_data.start_y_);
         p_player.DoPlayer(map_data);
         p_player.Show(g_screen);
+        p_player.HandleBullet(g_screen);
         
         SDL_RenderPresent(g_screen);
         game_map.SetMap(map_data);

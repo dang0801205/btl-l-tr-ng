@@ -1,7 +1,7 @@
 #include "MainObject.h"
 #include "CommonFunc.h"
 #include "Baseobject.h"
-
+#include "BulletObject.h"
 MainObject::MainObject() {
     frame_ = 0;
     x_pos_ = 0;
@@ -33,8 +33,8 @@ bool MainObject::LoadImg(std::string path, SDL_Renderer* screen) {
     if (ret == true) {
         SDL_Rect r;
         get_rect(r);
-        width_frame_ = r.w / 8;
-        height_frame_ = r.h/1.2;
+        width_frame_ = r.w / 9;
+        height_frame_ = r.h / 1.1;
     }
 
     return ret;
@@ -42,7 +42,7 @@ bool MainObject::LoadImg(std::string path, SDL_Renderer* screen) {
 
 void MainObject::set_clips() {
     if (width_frame_ > 0 && height_frame_ > 0) {
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 9; ++i) {
             frame_clip_[i].x = i * width_frame_;
             frame_clip_[i].y = 0;
             frame_clip_[i].w = width_frame_;
@@ -52,7 +52,7 @@ void MainObject::set_clips() {
 }
 
 void MainObject::Show(SDL_Renderer* des) {
-    std::string imagePath = (status_ == WALK_LEFT) ? "img/run_left.png" : "img/fixed_right.png";
+    std::string imagePath = (status_ == WALK_LEFT) ? "img/l.png" : "img/r.png";
     LoadImg(imagePath, des);
 
     if (input_type.left_ || input_type.right_) {
@@ -75,7 +75,7 @@ void MainObject::Show(SDL_Renderer* des) {
 
 void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
     if (events.type == SDL_KEYDOWN) {
-        switch (events.key.keysym.sym) {
+        switch (events.key.keysym.sym) {	
             case SDLK_RIGHT:
                 status_ = WALK_RIGHT;
                 input_type.right_ = 1;
@@ -97,11 +97,59 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
                 break;
         }
     }
-	if(events.type == SDL_KEYDOWN) {
-    if(events.key.keysym.sym == SDLK_UP) {
-        input_type.jump_ = 1;
-    }
+	if(events.type == SDL_MOUSEBUTTONDOWN)
+	{
+		if(events.button.button == SDL_BUTTON_RIGHT)
+		{
+			input_type.jump_ = 1;
+		}
+		else if(events.button.button == SDL_BUTTON_LEFT)
+		{
+			BulletObject* p_bullet = new BulletObject();
+			p_bullet -> LoadImg("img/bullet.png",screen);
+		    p_bullet -> SetRect(this -> rect_.x + width_frame_ - 20,rect_.y +height_frame_*0.3);
+			p_bullet -> set_x_val(20);
+            p_bullet -> set_is_move(true);
+		    p_bullet_list_.push_back(p_bullet);
+			
+			
+
+
+		}
+
+	}
+
+	
+
 }
+
+
+void MainObject::HandleBullet(SDL_Renderer* des)
+{
+	for(int i=0; i< p_bullet_list_.size();i++)
+	{
+		BulletObject* p_bullet = p_bullet_list_.at(i);
+		if(p_bullet != NULL)
+		{
+			if(p_bullet ->get_is_move() == true)
+			{
+				p_bullet -> HandleMove(SCREEN_WIDTH,SCREEN_HEIGHT);
+				p_bullet -> Render(des);
+			}
+			else 
+			{
+				p_bullet_list_.erase(p_bullet_list_.begin() + i);
+				if(p_bullet !=NULL)
+				{
+					delete p_bullet;
+					p_bullet == NULL;
+				}
+
+			}
+
+		}
+
+	}
 
 }
 
@@ -259,4 +307,32 @@ void MainObject::DoPlayer(Map& map_data) {
 	{
 		come_back_time = 60;
 	}
+}
+void MainObject::RemoveBullet(const int& index)
+{
+	int size = p_bullet_list_.size();
+	if(size > 0 && index < size) 
+	{
+		BulletObject* p_bullet = p_bullet_list_.at(index);
+		p_bullet_list_.erase(p_bullet_list_.begin() + index); 
+
+		if(p_bullet)
+		{
+			delete p_bullet;
+			p_bullet = NULL;
+		}
+
+
+	}
+
+}
+
+SDL_Rect MainObject::getRectFrame()
+{
+	SDL_Rect rect;
+	rect.x = rect_.x;
+	rect.y = rect_.y;
+	rect.w = width_frame_;
+	rect.h = height_frame_;
+	return rect;
 }
