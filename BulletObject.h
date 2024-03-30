@@ -39,7 +39,7 @@ public:
 	unsigned get_bullet_type() const {return bullet_type_;}
 	bool LoadImgBullet(SDL_Renderer* des);
 
-
+   protected:
 	int x_val_;
 	int y_val_;
 	bool is_move_;
