@@ -61,7 +61,7 @@ void MainObject::Show(SDL_Renderer* des) {
         frame_ = 0;
     }
 
-    frame_ = (frame_ >= 8) ? 0 : frame_;
+    frame_ = (frame_ >= 9) ? 0 : frame_;
 
     SDL_Rect r;
     get_rect(r);
@@ -107,20 +107,13 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
 		{
 			BulletObject* p_bullet = new BulletObject();
 			p_bullet -> LoadImg("img/bullet.png",screen);
-		    p_bullet -> SetRect(this -> rect_.x + width_frame_ - 20,rect_.y +height_frame_*0.3);
-			p_bullet -> set_x_val(20);
+		    p_bullet -> SetRect(this->rect_.x + width_frame_ - 20, this->rect_.y + height_frame_ * 0.17);
+			p_bullet -> set_x_val(10);
+			p_bullet -> set_y_val(10);
             p_bullet -> set_is_move(true);
 		    p_bullet_list_.push_back(p_bullet);
-			
-			
-
-
 		}
-
 	}
-
-	
-
 }
 
 
@@ -238,21 +231,39 @@ void MainObject::DoPlayer(Map& map_data) {
 	if(x1 >= 0 && x2 < MAX_MAP_X && y1 >= 0 && y2 << MAX_MAP_Y)
 	{
 		if(x_val_ >0)
-		{
-			if(map_data.tile[y1][y2] != BLANK_TILE || map_data.tile[y2][x2] != BLANK_TILE )
+		{   int val1 = map_data.tile[y1][x2];
+		    int val2 = map_data.tile[y2][x2];
+			if(val1 == 6|| val2 == 6)
+			{
+				map_data.tile[y1][x2] = 0;
+				map_data.tile[y2][x2] = 0;
+				IncreaseMoney();
+			}
+			else{
+			if(val1!= BLANK_TILE || val2 != BLANK_TILE )
 			{
 				x_pos_ = x2*TILE_SIZE;
 				x_pos_ -= width_frame_ + 1;
 				x_val_ = 0;
 			}
+			}
 
 		}
 		else if(x_val_ < 0)
-		{
-			if(map_data.tile[y1][x1] != BLANK_TILE || map_data.tile[y2][x1] != BLANK_TILE)
+		{    int val1 = map_data.tile[y1][x1];
+		    int val2 = map_data.tile[y2][x2];
+			if(val1 == 6 || val2 == 6)
+			{
+				map_data.tile[y2][x1] = 0;
+				map_data.tile[y2][x2] = 0;
+				IncreaseMoney(); 
+			}
+			else{
+			if(val1 != BLANK_TILE || val2 != BLANK_TILE)
 			{
 				x_pos_ = (x1+1) * TILE_SIZE;
 				x_val_ = 0;
+			}
 			}
 
 		}
@@ -270,26 +281,43 @@ void MainObject::DoPlayer(Map& map_data) {
 	if(x1 >=0 && x2 < MAX_MAP_X && y1 >= 0 && y2 < MAX_MAP_Y)
 	{
 		if(y_val_ > 0 )
-		{
-			if(map_data.tile[y2][x1] != BLANK_TILE || map_data.tile[y2][x2] != BLANK_TILE)
+		{   int val1 = map_data.tile[y2][x1];
+	 	    int val2 = map_data.tile[y2][x2];
+			if(val1 == 6|| val2 == 6){
+					map_data.tile[y2][x1] = 0;
+					map_data.tile[y2][x2] = 0;
+					IncreaseMoney();
+			}
+	  else{
+	
+           if(map_data.tile[y2][x1] != BLANK_TILE || map_data.tile[y2][x2] != BLANK_TILE)
 			{
 				y_pos_ = y2*TILE_SIZE;
 				y_pos_ -= (height_frame_ + 1);
 				y_val_ = 0;
 				on_ground = true;
 			}
+			}
+			
 
 		}
 		else if(y_val_ < 0)
-		{
-			if(map_data.tile[y1][x1] != BLANK_TILE || map_data.tile[y1][x2] != BLANK_TILE)
+		{   int val1 = map_data.tile[y1][x1];
+		    int val2 = map_data.tile[y1][x2];
+		    if(val1 == 6|| val2 == 6)
+			{
+				map_data.tile[y1][x1] =0;
+		        map_data.tile[y1][x2] = 0;
+			}
+			else{
+			if(val1!= BLANK_TILE || val2 != BLANK_TILE)
 			{
 				y_pos_ = (y1 + 1)* TILE_SIZE;
 				y_val_ = 0; 
 			}
 
 		}
-
+		}
 
 	}
 
@@ -307,6 +335,10 @@ void MainObject::DoPlayer(Map& map_data) {
 	{
 		come_back_time = 60;
 	}
+}
+void MainObject::IncreaseMoney()
+{
+	money_count++;
 }
 void MainObject::RemoveBullet(const int& index)
 {

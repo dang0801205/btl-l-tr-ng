@@ -1,5 +1,6 @@
 #include "BulletObject.h"
-
+#include "Baseobject.h"
+#include "MainObject.h"
 BulletObject::BulletObject()
 {
 	x_val_ = 0;
@@ -17,7 +18,7 @@ BulletObject::~BulletObject()
 void BulletObject::HandleMove(const int& x_border, const int& y_border)
 {
 	
-   rect_.x = x_val_;
+   rect_.x += x_val_;
    if(rect_.x > x_border)
    {
 	is_move_ = false;

@@ -42,7 +42,9 @@ public:
     SDL_Rect getRectFrame();
 	int get_frame_width() const {return width_frame_;}
 	int get_frame_height() const {return height_frame_;}
-	
+    void IncreaseMoney();
+	protected:
+    int money_count = 0;
 	std::vector<BulletObject*> p_bullet_list_;
     float x_val_;  
     float y_val_;
