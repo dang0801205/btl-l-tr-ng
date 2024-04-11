@@ -2,6 +2,7 @@
 #include "CommonFunc.h"
 #include "Baseobject.h"
 #include "BulletObject.h"
+#include "Threats.h"
 MainObject::MainObject() {
     frame_ = 0;
     x_pos_ = 0;
@@ -106,11 +107,10 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
 		else if(events.button.button == SDL_BUTTON_LEFT)
 		{
 			BulletObject* p_bullet = new BulletObject();
-			p_bullet -> LoadImg("img/bullet.png",screen);
-		    p_bullet -> SetRect(this->rect_.x + width_frame_ - 20, this->rect_.y + height_frame_ * 0.17);
-			p_bullet -> set_x_val(10);
-			p_bullet -> set_y_val(10);
-            p_bullet -> set_is_move(true);
+			p_bullet->LoadImg("img/bullet.png",screen);
+		    p_bullet->SetRect(this->rect_.x + width_frame_-20,this->rect_.y + height_frame_ * 0.3);
+			p_bullet->set_x_val(20);
+            p_bullet->set_is_move(true);
 		    p_bullet_list_.push_back(p_bullet);
 		}
 	}

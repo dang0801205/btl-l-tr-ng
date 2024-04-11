@@ -5,6 +5,7 @@
 #include "ImpTimer.h"
 #include "MainObject.h"
 #include "BulletObject.h"
+#include "Threats.h"
 const int SCREEN_FPS = 60;
 const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
@@ -66,6 +67,47 @@ void close()
 	IMG_Quit();
 	SDL_Quit();
 }
+std::vector<Threats*> MakeThreatsList()
+{   
+    std::vector<Threats*> list_threats;
+    
+    Threats* threats_object = new Threats[20];
+    Threats* moving_threats = new Threats[20];
+    for(int i = 0; i < 20; i++)
+    {
+        Threats* p_threats = (moving_threats + i);
+        if(p_threats != NULL)
+        {
+            p_threats->LoadImg("img//threats_left.png",g_screen);
+            p_threats->set_clips();
+            p_threats->set_type_move(Threats::MOVE_IN_SPACE_THREAT);
+            p_threats->set_input_left(1);
+            p_threats->set_x_pos(500+ i*500);
+            p_threats->set_y_pos(200);
+
+            int pos1 = p_threats->get_x_pos() - 50;
+            int pos2 = p_threats->get_x_pos() + 50;
+            p_threats->SetAnimationPos(pos1,pos2);         
+            list_threats.push_back(p_threats);
+        }
+    } 
+    for (int i = 0; i < 20; i++)
+    {
+        Threats* p_threats = (threats_object + i);
+        if (p_threats != NULL)
+        {
+            p_threats->LoadImg("img//threat1.png", g_screen);
+            p_threats->set_clips();
+            p_threats->set_x_pos(700 + i * 500);
+            p_threats->set_y_pos(250);
+            p_threats->set_type_move(Threats::STATIC_THREAT);
+            p_threats->set_input_left(0); 
+            list_threats.push_back(p_threats);
+        }
+    }
+    return list_threats;
+}
+
  int main(int argc, char* argv[]) {
     if (InitData() == false)
         return -1;
@@ -75,6 +117,7 @@ void close()
     game_map.LoadMap("map/map01.dat");
     game_map.LoadTiles(g_screen);
 
+    std::vector<Threats*>threats_list = MakeThreatsList();
     LoadAndStretchLayers(g_screen, layer1, layer2, layer3, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     bool is_quit = false;
@@ -107,10 +150,23 @@ void close()
         p_player.Show(g_screen);
         p_player.HandleBullet(g_screen);
         
-        SDL_RenderPresent(g_screen);
+      
         game_map.SetMap(map_data);
         
-        
+       for(int i = 0;i < threats_list.size();i++)
+       {
+        Threats* p_threat = threats_list.at(i);
+        if(p_threat != NULL)
+        {
+            p_threat->SetMapXY(map_data.start_x_,map_data.start_y_);
+            p_threat->ImpMoveType(g_screen);
+            p_threat->Doplayer(map_data);
+           
+            p_threat->Show(g_screen);
+         
+        }    
+       } 
+         SDL_RenderPresent(g_screen);
         frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < SCREEN_TICKS_PER_FRAME) {
             SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTime);
@@ -119,4 +175,5 @@ void close()
 
     close();
     return 0;
+    
 }

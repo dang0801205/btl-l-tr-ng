@@ -6,6 +6,7 @@
 #include "src/include/SDL2/SDL_ttf.h"
 #include <iostream>
 #include <string.h>
+#include <vector>
 #include <math.h>
 static SDL_Window* g_window;
 static SDL_Renderer* g_screen;

@@ -1,6 +1,5 @@
 #ifndef MAIN_OBJECT_H
 #define MAIN_OBJECT_H
-
 #include <vector>
 #include "CommonFunc.h"
 #include "BaseObject.h"
@@ -45,6 +44,7 @@ public:
     void IncreaseMoney();
 	protected:
     int money_count = 0;
+private:
 	std::vector<BulletObject*> p_bullet_list_;
     float x_val_;  
     float y_val_;
