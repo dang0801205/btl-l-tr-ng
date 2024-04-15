@@ -45,6 +45,10 @@ struct Map
    int tile[MAX_MAP_Y][MAX_MAP_X];
    std::string file_name;
 };
+namespace SDLCommonFunc
+{
+  bool CheckCollision(const SDL_Rect& object1,const SDL_Rect& object2);
+}
 #endif
 
 

@@ -241,3 +241,73 @@ void Threats::ImpMoveType(SDL_Renderer* screen)
 	}
 	
 }
+void Threats::InitBullet(BulletObject* p_bullet,SDL_Renderer* screen)
+{
+	if(p_bullet != NULL)
+	{
+		 p_bullet -> set_bullet_type(BulletObject::THREAT_BULLET);
+		 p_bullet ->  LoadImgBullet(screen);
+		
+		
+			p_bullet -> set_is_move(true);
+			p_bullet -> set_bullet_dir(BulletObject::DIR_LEFT);
+			p_bullet -> SetRect(rect_.x + 10, rect_.y +5);
+			p_bullet -> set_x_val(15);
+
+		bullet_list_.push_back(p_bullet);
+	}
+
+}
+
+void Threats::MakeBullet(SDL_Renderer* screen, const int& x_limit, const int& y_limit)
+{
+	for (int i = 0; i < bullet_list_.size(); i++)
+	{
+		BulletObject* p_bullet = bullet_list_.at(i);
+		if(p_bullet != NULL)
+		{
+			if(p_bullet -> get_is_move())
+			{
+				int bullet_distance = rect_.x - p_bullet->GetRect().x;
+				if(bullet_distance <300)
+				{
+					p_bullet -> HandleMove(x_limit,y_limit);
+					p_bullet -> Render(screen);
+				}else
+				{
+					p_bullet -> set_is_move(false);
+				}
+
+				
+				
+			}
+			else
+			{
+				p_bullet -> set_is_move(true);
+				p_bullet -> SetRect(rect_.x + 10, rect_.y +10);
+			}
+		}
+
+		
+	}
+}
+
+
+void Threats::RemoveBullet(const int& index)
+{
+	int size = bullet_list_.size();
+	if(size > 0 && index < size) 
+	{
+		BulletObject* p_bullet = bullet_list_.at(index);
+		bullet_list_.erase(bullet_list_.begin() + index); 
+
+		if(p_bullet)
+		{
+			delete p_bullet;
+			p_bullet = NULL;
+		}
+
+
+	}
+
+}

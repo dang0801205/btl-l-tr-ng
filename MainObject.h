@@ -29,6 +29,7 @@ public:
     void CheckToMap(Map& map_data);
     void SetMapXY(const int map_x,const int map_y) {map_x_ = map_x ; map_y_ = map_y;};
     void CenterEntityOnMap(Map& map_data);
+    SDL_Rect GetRectFrame();
  
    void set_bullet_list(std::vector<BulletObject*> bullet_list)
 	{

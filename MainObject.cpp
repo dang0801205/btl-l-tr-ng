@@ -32,10 +32,8 @@ bool MainObject::LoadImg(std::string path, SDL_Renderer* screen) {
     bool ret = BaseObject::LoadImg(path, screen);
 
     if (ret == true) {
-        SDL_Rect r;
-        get_rect(r);
-        width_frame_ = r.w / 9;
-        height_frame_ = r.h / 1.1;
+        width_frame_ = rect_.w / 9;
+        height_frame_ = rect_.h / 1.1;
     }
 
     return ret;
@@ -63,14 +61,12 @@ void MainObject::Show(SDL_Renderer* des) {
     }
 
     frame_ = (frame_ >= 9) ? 0 : frame_;
-
-    SDL_Rect r;
-    get_rect(r);
-    r.x = x_pos_ - map_x_;
-    r.y = y_pos_ - map_y_;
+	
+    rect_.x = x_pos_ - map_x_;
+    rect_.y = y_pos_ - map_y_;
 
     SDL_Rect* current_clip = &frame_clip_[frame_];
-    SDL_Rect renderQuad = {r.x, r.y, width_frame_, height_frame_};
+    SDL_Rect renderQuad = {rect_.x, rect_.y, width_frame_, height_frame_};
     SDL_RenderCopy(des, p_object_, current_clip, &renderQuad);
 }
 
@@ -98,22 +94,36 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen) {
                 break;
         }
     }
-	if(events.type == SDL_MOUSEBUTTONDOWN)
-	{
-		if(events.button.button == SDL_BUTTON_RIGHT)
-		{
-			input_type.jump_ = 1;
-		}
-		else if(events.button.button == SDL_BUTTON_LEFT)
+	if(events.type == SDL_MOUSEBUTTONDOWN) {
+    if(events.button.button == SDL_BUTTON_RIGHT) {
+        input_type.jump_ = 1;
+    }
+	else if(events.button.button == SDL_BUTTON_LEFT)
 		{
 			BulletObject* p_bullet = new BulletObject();
-			p_bullet->LoadImg("img/bullet.png",screen);
-		    p_bullet->SetRect(this->rect_.x + width_frame_-20,this->rect_.y + height_frame_ * 0.3);
-			p_bullet->set_x_val(20);
-            p_bullet->set_is_move(true);
-		    p_bullet_list_.push_back(p_bullet);
+			p_bullet->set_bullet_type(BulletObject::MAIN_BULLET);
+			p_bullet->LoadImgBullet(screen);
+			if(status_ == WALK_LEFT)
+			{
+				p_bullet -> set_bullet_dir(BulletObject::DIR_LEFT);
+				p_bullet -> SetRect(this -> rect_.x + width_frame_ - 20,rect_.y +height_frame_*0.3);
+			}
+			else 
+			{
+				p_bullet -> set_bullet_dir(BulletObject::DIR_RIGHT);
+				p_bullet -> SetRect(this -> rect_.x + width_frame_ - 20,rect_.y +height_frame_*0.3);
+			}
+				p_bullet -> set_x_val(20);
+				p_bullet -> set_is_move(true);
+				p_bullet_list_.push_back(p_bullet);
+			
+
 		}
+
 	}
+
+	
+
 }
 
 
@@ -171,6 +181,8 @@ void MainObject::DoPlayer(Map& map_data) {
 
 		CheckToMap(map_data);
 		CenterEntityOnMap(map_data);
+
+		
 	}
 	if(come_back_time > 0){
 		come_back_time -- ;

@@ -58,8 +58,8 @@ void LoadAndStretchLayers(SDL_Renderer* renderer, BaseObject& layer1, BaseObject
 void close()
 {
 	layer1.Free();
-  layer2.Free();
-  layer3.Free();
+    layer2.Free();
+    layer3.Free();
 	SDL_DestroyRenderer(g_screen);
 	g_screen = NULL;
 	SDL_DestroyWindow(g_window);
@@ -102,6 +102,9 @@ std::vector<Threats*> MakeThreatsList()
             p_threats->set_y_pos(250);
             p_threats->set_type_move(Threats::STATIC_THREAT);
             p_threats->set_input_left(0); 
+
+            BulletObject* p_bullet = new BulletObject();
+            p_threats->InitBullet(p_bullet,g_screen);
             list_threats.push_back(p_threats);
         }
     }
@@ -161,11 +164,49 @@ std::vector<Threats*> MakeThreatsList()
             p_threat->SetMapXY(map_data.start_x_,map_data.start_y_);
             p_threat->ImpMoveType(g_screen);
             p_threat->Doplayer(map_data);
-           
+            p_threat->MakeBullet(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
             p_threat->Show(g_screen);
+
+
+            SDL_Rect rect_player
          
         }    
        } 
+       
+		std::vector<BulletObject*> bullet_arr = p_player.get_bullet_list();
+		for(int r = 0;r < bullet_arr.size();r++)
+		{
+			BulletObject* p_bullet = bullet_arr.at(r);
+			if(p_bullet != NULL)
+			{
+				for(int t = 0;t < threats_list.size();t++)
+				{
+					Threats* obj_threats = threats_list.at(t);
+					if(obj_threats != NULL)
+					{
+						SDL_Rect tRect;
+						tRect.x = obj_threats -> GetRect().x;
+						tRect.y = obj_threats -> GetRect().y;
+						tRect.w = obj_threats -> get_width_frame();
+						tRect.h = obj_threats -> get_height_frame();
+
+						SDL_Rect bRect = p_bullet->GetRect();
+
+						bool bCol = SDLCommonFunc::CheckCollision(bRect,tRect);
+						if(bCol)
+						{
+							p_player.RemoveBullet(r);
+							obj_threats -> Free();
+							threats_list.erase(threats_list.begin() + t);
+						}
+
+					}
+
+				}
+
+			}
+
+		}
          SDL_RenderPresent(g_screen);
         frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < SCREEN_TICKS_PER_FRAME) {
