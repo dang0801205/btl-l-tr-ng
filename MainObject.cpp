@@ -27,7 +27,10 @@ MainObject::MainObject() {
 
 
 MainObject::~MainObject() {}
-
+bool MainObject::Instruction()
+{
+	return x_pos_ <= 100;
+}
 bool MainObject::LoadImg(std::string path, SDL_Renderer* screen) {
     bool ret = BaseObject::LoadImg(path, screen);
 
@@ -38,7 +41,15 @@ bool MainObject::LoadImg(std::string path, SDL_Renderer* screen) {
 
     return ret;
 }
-
+SDL_Rect MainObject::getRectFrame()
+{
+	SDL_Rect rect;
+	rect.x = rect_.x;
+	rect.y = rect_.y;
+	rect.w = width_frame_;
+	rect.h = height_frame_;
+	return rect;
+}
 void MainObject::set_clips() {
     if (width_frame_ > 0 && height_frame_ > 0) {
         for (int i = 0; i < 9; ++i) {
@@ -371,12 +382,3 @@ void MainObject::RemoveBullet(const int& index)
 
 }
 
-SDL_Rect MainObject::getRectFrame()
-{
-	SDL_Rect rect;
-	rect.x = rect_.x;
-	rect.y = rect_.y;
-	rect.w = width_frame_;
-	rect.h = height_frame_;
-	return rect;
-}

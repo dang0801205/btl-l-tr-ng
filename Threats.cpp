@@ -13,11 +13,13 @@ Threats::Threats()
    on_ground_ = 0;
    come_back_time_ = 0;
    frame = 0;
-   
+  
+
    ani_a_ = 0;
    ani_b_ = 0;
    input_type.left_ = 1;
    type_move = STATIC_THREAT;
+  
 }
 
 Threats::~Threats()
@@ -33,6 +35,15 @@ bool Threats::LoadImg(std::string path,SDL_Renderer* screen)
 		height_frame_ = rect_.h;
 	}
 	return ret;
+}
+SDL_Rect Threats::getRectFrame()
+{
+	SDL_Rect rect;
+	rect.x = rect_.x;
+	rect.y = rect_.y;
+	rect.w = width_frame_;
+	rect.h = height_frame_;
+	return rect;
 }
 void Threats::set_clips()
 {

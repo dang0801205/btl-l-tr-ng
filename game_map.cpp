@@ -2,6 +2,8 @@
 #include "game_map.h"
 #include <fstream>
 
+int map_x =0;
+int map_y =0;
 void GameMap::LoadMap(std::string path)
 {
     std::ifstream  file;
@@ -37,6 +39,20 @@ void GameMap::LoadMap(std::string path)
     game_map_.file_name = path;
 
 }
+
+/*void GameMap ::ShowNPC (SDL_Renderer* des){
+    SDL_Surface* a = IMG_Load("img/Idle9.png");
+    SDL_Texture* b = SDL_CreateTextureFromSurface(des, a);
+    SDL_FreeSurface(a);
+    if (true) {
+        int rect_x = game_map_.start_x_; 
+        int rect_y = game_map_.start_y_+ 323.8; 
+
+        SDL_Rect rendQuad = {rect_x, rect_y, 64, 64};
+        SDL_RenderCopy(des, b, nullptr, &rendQuad);
+    }
+    SDL_DestroyTexture(b);
+}*/
 void GameMap :: LoadTiles(SDL_Renderer* screen)
 {
     char file_img[30];
@@ -63,9 +79,6 @@ void GameMap :: DrawMap(SDL_Renderer* screen)
 
     int y1 =0;
     int y2 =0;
-
-    int map_x =0;
-    int map_y =0;
 
     map_x = game_map_.start_x_/TILE_SIZE;
     x1 = (game_map_.start_x_ % TILE_SIZE)* -1;

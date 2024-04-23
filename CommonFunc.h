@@ -8,6 +8,8 @@
 #include <string.h>
 #include <vector>
 #include <math.h>
+#include "Windows.h"
+
 static SDL_Window* g_window;
 static SDL_Renderer* g_screen;
 static SDL_Event g_event;
@@ -45,9 +47,14 @@ struct Map
    int tile[MAX_MAP_Y][MAX_MAP_X];
    std::string file_name;
 };
+enum class ObjectType {
+    PLAYER,
+    NPC
+};
+
 namespace SDLCommonFunc
 {
-  bool CheckCollision(const SDL_Rect& object1,const SDL_Rect& object2);
+  bool CheckCollision(const SDL_Rect& object1, const SDL_Rect& object2);
 }
 #endif
 

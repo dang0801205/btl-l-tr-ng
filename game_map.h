@@ -22,6 +22,7 @@ public:
     void DrawMap(SDL_Renderer* screen);
     Map getMap() const{return game_map_;};
     void SetMap(Map& map_data) {game_map_ = map_data;};
+    //void ShowNPC(SDL_Renderer* des);
 protected:
      Map game_map_;
      TileMat tile_mat[MAX_TILE];

@@ -1,4 +1,3 @@
-
 #include "Baseobject.h"
 #include "CommonFunc.h"
 #include "game_map.h"
@@ -6,13 +5,19 @@
 #include "MainObject.h"
 #include "BulletObject.h"
 #include "Threats.h"
+#include "NPC.h"
+#include "TextObject.h"
+#include "Windows.h"
+
 const int SCREEN_FPS = 60;
 const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 Uint32 frameStart;
 int frameTime;
 BaseObject layer1, layer2, layer3;
+TTF_Font* font_time = NULL;
 MainObject p_player;
+NPC npc;
 bool InitData()
 {
 	bool success = true;
@@ -37,6 +42,15 @@ bool InitData()
 		SDL_SetRenderDrawColor(g_screen,RENDER_DRAW_COLOR,RENDER_DRAW_COLOR,RENDER_DRAW_COLOR,RENDER_DRAW_COLOR);
 	}
 	}
+    if(TTF_Init() == -1)
+    {
+        success = false;
+    }
+    font_time = TTF_OpenFont("font//times new roman bold italic.ttf", 15);
+    if(font_time == NULL) 
+    {
+        success = false;
+    }
   return success;
 }
 void LoadAndStretchLayers(SDL_Renderer* renderer, BaseObject& layer1, BaseObject& layer2, BaseObject& layer3, int screenWidth, int screenHeight) {
@@ -67,6 +81,7 @@ void close()
 	IMG_Quit();
 	SDL_Quit();
 }
+
 std::vector<Threats*> MakeThreatsList()
 {   
     std::vector<Threats*> list_threats;
@@ -111,9 +126,10 @@ std::vector<Threats*> MakeThreatsList()
     return list_threats;
 }
 
- int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
     if (InitData() == false)
         return -1;
+       
     p_player.LoadImg("img/r.png", g_screen);
     p_player.set_clips();
     GameMap game_map;
@@ -122,11 +138,18 @@ std::vector<Threats*> MakeThreatsList()
 
     std::vector<Threats*>threats_list = MakeThreatsList();
     LoadAndStretchLayers(g_screen, layer1, layer2, layer3, SCREEN_WIDTH, SCREEN_HEIGHT);
+    TextObject mark_game;
+    mark_game.SetColor(TextObject::WHITE_TEXT);
+    UINT mark_value = 0;
+    TextObject money_game;
+    money_game.SetColor(TextObject::WHITE_TEXT);
 
     bool is_quit = false;
+ 
     Uint32 frameStart;
     int frameTime;
-
+    int conversation = 0;
+    int num_die = 0;
     while (!is_quit) {
         frameStart = SDL_GetTicks();
 
@@ -135,6 +158,14 @@ std::vector<Threats*> MakeThreatsList()
                 is_quit = true;
             }
             p_player.HandleInputAction(g_event, g_screen);
+            if(g_event.type == SDL_KEYDOWN){
+                if(g_event.key.keysym.sym == SDLK_k){
+                    conversation += 1;
+                    if(conversation == 8){
+                        conversation = 0;
+                    }
+                }
+            }
         }
 
         SDL_SetRenderDrawColor(g_screen, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
@@ -147,7 +178,12 @@ std::vector<Threats*> MakeThreatsList()
         game_map.DrawMap(g_screen);
         Map map_data = game_map.getMap();
     
+         npc.LoadImg( "img/Idle9.png",g_screen);
         
+         npc.CheckToMap(map_data);
+         npc.set_x_pos(0);
+         npc.set_y_pos(329);
+       
         p_player.SetMapXY(map_data.start_x_,map_data.start_y_);
         p_player.DoPlayer(map_data);
         p_player.Show(g_screen);
@@ -166,14 +202,59 @@ std::vector<Threats*> MakeThreatsList()
             p_threat->Doplayer(map_data);
             p_threat->MakeBullet(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
             p_threat->Show(g_screen);
+            
+         SDL_Rect rect_player = p_player.getRectFrame();
+				std::vector<BulletObject*> tBullet_list = p_threat -> get_bullet_list();
+				bool bCol1 = false;
+			
+				for(int j=0;j<tBullet_list.size();j++)
+				{
+					BulletObject* pt_bullet = tBullet_list.at(j);
+					if(pt_bullet)
+					{
+						bCol1 = SDLCommonFunc::CheckCollision(pt_bullet->GetRect(), rect_player);
+						if(bCol1)
+						{ 
+                        
 
+						
+					//std::cout << pt_bullet->get_x_val() << " " << pt_bullet -> get_y_val();
+						}
 
-            SDL_Rect rect_player
-         
-        }    
+					}
+
+				}
+                
+				SDL_Rect rect_threat = p_threat -> getRectFrame();
+				bool bCol2 = SDLCommonFunc::CheckCollision(rect_threat,rect_player);
+				if(bCol2
+                ||bCol1
+                )
+				{
+					if(num_die++ <= 20)
+					{
+						p_player.SetRect(0,0);
+						
+                       
+						continue;
+					}
+					else
+					{
+						if(MessageBox(NULL,"GAME OVER" ,"INFO",MB_OK | MB_ICONSTOP) == IDOK)
+						{
+							p_threat -> Free();
+							close();
+							SDL_Quit();
+							return 0;
+						}
+
+					}
+
+				}
+          
        } 
-       
-		std::vector<BulletObject*> bullet_arr = p_player.get_bullet_list();
+       }
+    std::vector<BulletObject*> bullet_arr = p_player.get_bullet_list();
 		for(int r = 0;r < bullet_arr.size();r++)
 		{
 			BulletObject* p_bullet = bullet_arr.at(r);
@@ -194,7 +275,7 @@ std::vector<Threats*> MakeThreatsList()
 
 						bool bCol = SDLCommonFunc::CheckCollision(bRect,tRect);
 						if(bCol)
-						{
+						{   mark_value++;
 							p_player.RemoveBullet(r);
 							obj_threats -> Free();
 							threats_list.erase(threats_list.begin() + t);
@@ -207,14 +288,57 @@ std::vector<Threats*> MakeThreatsList()
 			}
 
 		}
+
+       std::vector<std::string> npc_dialogues = {
+    "press k to interact",
+    "How are you doing?",
+    "Nice weather today!",
+    "your treasure has been stealed",
+    "And you the great wizard have to travel to the North and defeat all monster to retain it!",
+    "Use arrow in the keyboard to move",
+    "And use left mouse click to shoot powerful bullet",
+    "Good luck with your journey wizard"
+    // Thêm các lời nói khác tại đây...
+};
+ 
+
+ 
+   std::string random_dialogue = npc_dialogues[conversation];
+		TextObject dialouge_text;
+		dialouge_text.SetText(random_dialogue);
+    
+		dialouge_text.LoadFromRenderText(font_time, g_screen);
+		if(p_player.Instruction())
+        {dialouge_text.RenderText(g_screen, 100, 100);
+        } 
+        else{
+            conversation = 0;
+            }// Vị trí (100, 100)
+
+         npc.SetMapXY(map_data.start_x_,map_data.start_y_);
+         npc.Show(g_screen);
+         std::string var_mark = std::to_string(mark_value);
+         std::string strMark("Mark: ");
+         strMark += var_mark;
+
+         mark_game.SetText(strMark);
+         mark_game.LoadFromRenderText(font_time,g_screen);
+         mark_game.RenderText(g_screen,SCREEN_WIDTH*0.5 - 50, 15);
+
+         int money_count = p_player.GetMoneyCount();
+         std::string money_str = std::to_string(money_count);
+
+         money_game.SetText(money_str);
+         money_game.LoadFromRenderText(font_time,g_screen);
+         money_game.RenderText(g_screen,SCREEN_WIDTH*0.5 - 250, 15);
+
          SDL_RenderPresent(g_screen);
         frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < SCREEN_TICKS_PER_FRAME) {
             SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTime);
         }
     }
-
     close();
     return 0;
-    
 }
+

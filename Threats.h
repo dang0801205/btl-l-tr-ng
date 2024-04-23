@@ -35,6 +35,7 @@ public:
   int get_width_frame() const{return width_frame_;}
   int get_height_frame() const{return height_frame_;}
   void Doplayer(Map& gMap);
+  void HandleNPC(SDL_Renderer* renderer); 
   void CheckToMap(Map &gMap);  
   void InitThreats();
 
@@ -47,7 +48,7 @@ public:
 	void InitBullet(BulletObject* p_bullet, SDL_Renderer* screen);
 	void MakeBullet(SDL_Renderer* screen, const int& x_limit, const int& y_limit);
 	void RemoveBullet(const int& index);
-
+  SDL_Rect getRectFrame();
   protected:
   int map_x_;
   int map_y_;
@@ -61,6 +62,7 @@ public:
   int width_frame_;
   int height_frame_;
   int frame;
+
 
   int type_move;
   int ani_a_;

@@ -19,7 +19,7 @@ public:
         WALK_RIGHT = 0,
         WALK_LEFT = 1
     };
-
+    bool Instruction();
     virtual bool LoadImg(std::string path, SDL_Renderer* screen);
     void Show(SDL_Renderer* des);
     void HandleInputAction(SDL_Event events, SDL_Renderer* screen); 
@@ -29,7 +29,7 @@ public:
     void CheckToMap(Map& map_data);
     void SetMapXY(const int map_x,const int map_y) {map_x_ = map_x ; map_y_ = map_y;};
     void CenterEntityOnMap(Map& map_data);
-    SDL_Rect GetRectFrame();
+    SDL_Rect getRectFrame();
  
    void set_bullet_list(std::vector<BulletObject*> bullet_list)
 	{
@@ -39,14 +39,19 @@ public:
     void HandleBullet(SDL_Renderer* des);
 
 	void RemoveBullet(const int& index);
-    SDL_Rect getRectFrame();
+   
 	int get_frame_width() const {return width_frame_;}
 	int get_frame_height() const {return height_frame_;}
     void IncreaseMoney();
-	protected:
-    int money_count = 0;
+
+
+    void set_comeback_time(const int& cb_time) {come_back_time = cb_time;}
+    int GetMoneyCount() const {return money_count;}
+
+  
 private:
 	std::vector<BulletObject*> p_bullet_list_;
+    int money_count;
     float x_val_;  
     float y_val_;
 
