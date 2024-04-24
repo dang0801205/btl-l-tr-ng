@@ -31,7 +31,8 @@ void BulletObject::HandleMove(const int& x_border, const int& y_border)
 {
     if (bullet_dir_ == DIR_RIGHT)
     {
-        rect_.x += x_val_;
+        rect_.x += 10;
+       
         if (rect_.x > x_border)
         {
             is_move_ = false;
@@ -39,7 +40,7 @@ void BulletObject::HandleMove(const int& x_border, const int& y_border)
     }
     else if (bullet_dir_ == DIR_LEFT)
     {
-        rect_.x -= x_val_;
+        rect_.x -= 10;
         if (rect_.x < 0)
         {
             is_move_ = false;

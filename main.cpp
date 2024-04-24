@@ -12,16 +12,19 @@
 const int SCREEN_FPS = 60;
 const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
+//Mix_Chunk *music = NULL;
 Uint32 frameStart;
 int frameTime;
 BaseObject layer1, layer2, layer3;
 TTF_Font* font_time = NULL;
+TTF_Font* font_menu = NULL;
 MainObject p_player;
 NPC npc;
+BaseObject menu1;
 bool InitData()
 {
 	bool success = true;
-	int ret = SDL_Init(SDL_INIT_VIDEO);
+	int ret = SDL_Init(SDL_INIT_EVERYTHING);
 	if(ret < 0){
 		return false;
 	}
@@ -46,12 +49,18 @@ bool InitData()
     {
         success = false;
     }
-    font_time = TTF_OpenFont("font//times new roman bold italic.ttf", 15);
+    font_time = TTF_OpenFont("font//times new roman bold italic.ttf", 30);
     if(font_time == NULL) 
     {
         success = false;
     }
-  return success;
+   /* Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+    music = Mix_LoadWAV("mixer/play.wav");
+    if(music == NULL)
+    {
+        success = false;
+    }*/
+    return success;
 }
 void LoadAndStretchLayers(SDL_Renderer* renderer, BaseObject& layer1, BaseObject& layer2, BaseObject& layer3, int screenWidth, int screenHeight) {
     
@@ -135,7 +144,7 @@ int main(int argc, char* argv[]) {
     GameMap game_map;
     game_map.LoadMap("map/map01.dat");
     game_map.LoadTiles(g_screen);
-
+    menu1.LoadImg("img/wizard0.png",g_screen);
     std::vector<Threats*>threats_list = MakeThreatsList();
     LoadAndStretchLayers(g_screen, layer1, layer2, layer3, SCREEN_WIDTH, SCREEN_HEIGHT);
     TextObject mark_game;
@@ -143,16 +152,45 @@ int main(int argc, char* argv[]) {
     UINT mark_value = 0;
     TextObject money_game;
     money_game.SetColor(TextObject::WHITE_TEXT);
-
-    bool is_quit = false;
- 
+    TextObject menu_game;
+    menu_game.SetColor(TextObject::BLACK_TEXT);
+    bool is_quit = true;
+    bool playMusic = 0;
     Uint32 frameStart;
     int frameTime;
     int conversation = 0;
     int num_die = 0;
+    bool menu = true;
+    std::string strmenu = "Press to start";
+    
+    while(menu)
+    {
+        while(SDL_PollEvent(&g_event) != 0)
+        {
+            if (g_event.type == SDL_QUIT) {
+                is_quit = true;
+                menu = false;
+            }
+            if(g_event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                menu = false;
+                is_quit = false;
+            }
+
+        }
+        menu1.Render(g_screen, NULL);
+         menu_game.SetText(strmenu);
+         menu_game.LoadFromRenderText(font_time,g_screen);
+         menu_game.RenderText(g_screen,SCREEN_WIDTH*0.5 - 50, SCREEN_HEIGHT* 0.5-50);
+        SDL_RenderPresent(g_screen);
+    }
+
     while (!is_quit) {
         frameStart = SDL_GetTicks();
-
+       /* if(playMusic==0){
+            Mix_PlayChannel(-1,music,-1);
+            playMusic = 1;
+        }*/
         while (SDL_PollEvent(&g_event) != 0) {
             if (g_event.type == SDL_QUIT) {
                 is_quit = true;
@@ -215,7 +253,8 @@ int main(int argc, char* argv[]) {
 						bCol1 = SDLCommonFunc::CheckCollision(pt_bullet->GetRect(), rect_player);
 						if(bCol1)
 						{ 
-                        
+                        p_player.RemoveBullet(j);
+                        break;
 
 						
 					//std::cout << pt_bullet->get_x_val() << " " << pt_bullet -> get_y_val();
@@ -231,10 +270,10 @@ int main(int argc, char* argv[]) {
                 ||bCol1
                 )
 				{
-					if(num_die++ <= 20)
-					{
+					if(num_die++ <= 51)
+					{   
 						p_player.SetRect(0,0);
-						
+						p_player.set_comeback_time(5);
                        
 						continue;
 					}

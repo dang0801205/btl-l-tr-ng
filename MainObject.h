@@ -6,10 +6,10 @@
 #include "game_map.h"
 #include "ImpTimer.h"
 #include "BulletObject.h"
-#define GRAVITY_SPEED 0.8
+#define GRAVITY_SPEED 1
 #define MAX_FALL_SPEED 10
-#define PLAYER_SPEED 8
-#define JUMP_VAL 18
+#define PLAYER_SPEED 10
+#define JUMP_VAL 20
 class MainObject : public BaseObject {
 public:
     MainObject();
