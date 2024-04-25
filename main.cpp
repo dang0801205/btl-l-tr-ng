@@ -257,7 +257,7 @@ int main(int argc, char* argv[]) {
                         break;
 
 						
-					//std::cout << pt_bullet->get_x_val() << " " << pt_bullet -> get_y_val();
+				
 						}
 
 					}
@@ -266,11 +266,9 @@ int main(int argc, char* argv[]) {
                 
 				SDL_Rect rect_threat = p_threat -> getRectFrame();
 				bool bCol2 = SDLCommonFunc::CheckCollision(rect_threat,rect_player);
-				if(bCol2
-                ||bCol1
-                )
-				{
-					if(num_die++ <= 51)
+				if((bCol2||bCol1) && p_player.rect_.y > 200)
+				{   
+					if(num_die++ <= 5)
 					{   
 						p_player.SetRect(0,0);
 						p_player.set_comeback_time(5);
@@ -357,7 +355,7 @@ int main(int argc, char* argv[]) {
          npc.SetMapXY(map_data.start_x_,map_data.start_y_);
          npc.Show(g_screen);
          std::string var_mark = std::to_string(mark_value);
-         std::string strMark("Mark: ");
+         std::string strMark("Score: ");
          strMark += var_mark;
 
          mark_game.SetText(strMark);

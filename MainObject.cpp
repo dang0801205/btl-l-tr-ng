@@ -270,7 +270,18 @@ void MainObject::DoPlayer(Map& map_data) {
 				x_val_ = 0;
 			}
 			}
+			if(val1 == 5||val2 == 5)
+			{
+				if(MessageBox(NULL,"WIN" ,"INFO",MB_OK | MB_ICONSTOP) == IDOK)
+						{
+							
+							
+							SDL_Quit();
+							
+						}
 
+			}
+			
 		}
 		else if(x_val_ < 0)
 		{    int val1 = map_data.tile[y1][x1];
@@ -288,11 +299,24 @@ void MainObject::DoPlayer(Map& map_data) {
 				x_val_ = 0;
 			}
 			}
-
+			if(val1 == 5||val2 == 5)
+			{
+			if(MessageBox(NULL,"WIN" ,"INFO",MB_OK | MB_ICONSTOP) == IDOK)
+						{
+							
+							
+							SDL_Quit();
+							
+						}
+			}
+			
+			
+			 
 		}
-
+     
 
 	}
+
 	int width_min = width_frame_ < TILE_SIZE ? width_frame_ : TILE_SIZE;
 	x1 = (x_pos_)/TILE_SIZE;
 	x2 = (x_pos_ + width_min)/TILE_SIZE;
@@ -321,6 +345,15 @@ void MainObject::DoPlayer(Map& map_data) {
 				on_ground = true;
 			}
 			}
+			if(val1 == 5||val2 == 5)
+			{
+				if(MessageBox(NULL,"WIN" ,"INFO",MB_OK | MB_ICONSTOP) == IDOK)
+						{
+							
+						
+							SDL_Quit();
+						}
+			}
 			
 
 		}
@@ -340,6 +373,16 @@ void MainObject::DoPlayer(Map& map_data) {
 			}
 
 		}
+		if(val1 == 5||val2 == 5)
+			{
+				if(MessageBox(NULL,"WIN" ,"INFO",MB_OK | MB_ICONSTOP) == IDOK)
+						{
+						
+							
+							SDL_Quit();
+							
+						}
+			}
 		}
 
 	}
