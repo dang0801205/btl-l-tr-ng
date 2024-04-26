@@ -45,23 +45,24 @@ Tên trộm ranh mãnh không những học lỏm được tuyệt chiêu bán c
   Người chơi sẽ phải vận dụng sự nhanh tay đồng thời khả năng phán đoán để né tránh các chướng ngại vật đồng thời đánh bại các quái vật trên đường đi.Khi đụng vào quái vật hoặc khi bị đạn quái vật bắn người chơi sẽ bị trừ mạng và sau 3 mạng thì trò chơi sẽ kết thúc rồi mạng hình sẽ hiện ra một message box 
 có tiêu đề "Game Over".Khi đi đến cuối map và chạm vào thùng châu báu thì người chơi sẽ thắng và đó cũng là lúc mà game này kết thúc.
 # 4.TOOLS
-   -Kĩ thuật đồ họa với SDL2
-   -Con trỏ, hàm,class
-   -Vector
-   -Load ảnh PNG
-   -Đồ họa chủ yếu tìm trên itch.io và các sprite sheet maker web:https://itch.io/game-assets/tag-characters/tag-wizards
-   -Ngôn ngữ C
-   -kênh youtube phát triển phần mêm 123AZ
-   -Web Lazyfool:https://lazyfoo.net/tutorials/SDL/index.php
-   -Các kĩ thuật lập trình cơ bản
+   - Kĩ thuật đồ họa với SDL2
+   - Con trỏ, hàm,class
+   - Vector
+   - Load ảnh PNG
+   - Đồ họa chủ yếu tìm trên itch.io và các sprite sheet maker web:https://itch.io/game-assets/tag-characters/tag-wizards
+   - Ngôn ngữ C
+   - kênh youtube phát triển phần mêm 123AZ
+   - Web Lazyfool:https://lazyfoo.net/tutorials/SDL/index.php
+   - Các kĩ thuật lập trình cơ bản
+   
 # 5.ABOUT CODE GAME
-  -Các file cơ bản:
-  +Baseobject : là class chung để khởi tạo cho các đối tượng khác
-  +main.cpp : là file tổng hợp các nguồn để chạy và khai báo nhiều phần khác như là text,menu,..
-  +MainOject.cpp : là file xử lý nhân vật chính
-  +NPC.cpp : file xử lý nhân vật NPC
-  +Threats.cpp : file xử lý các quái vật bao gồm cả 2 loại đứng yên và chuyển động
-  +IMP.cpp : xử lý độ trễ của game
-  +BulletObject.cpp : xử lý đạn
-  +game_map.cpp : xử lý map
-  +CommonFunc.cpp : xử lý các tác vụ cơ bản bao gồm cả kiểm tra va chạm
+  - Các file cơ bản:
+  + Baseobject : là class chung để khởi tạo cho các đối tượng khác
+  + main.cpp : là file tổng hợp các nguồn để chạy và khai báo nhiều phần khác như là text,menu,..
+  + MainOject.cpp : là file xử lý nhân vật chính
+  + NPC.cpp : file xử lý nhân vật NPC
+  + Threats.cpp : file xử lý các quái vật bao gồm cả 2 loại đứng yên và chuyển động
+  + IMP.cpp : xử lý độ trễ của game
+  + BulletObject.cpp : xử lý đạn
+  + game_map.cpp : xử lý map
+  + CommonFunc.cpp : xử lý các tác vụ cơ bản bao gồm cả kiểm tra va chạm
