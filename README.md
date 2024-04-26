@@ -1,5 +1,7 @@
 # **THE DODGE WITCH - UET K68J**
 
+Tên : Lê Trí Đăng 
+MSSV : 23020659
 
 
 # GAME INTRODUCTION
