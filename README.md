@@ -4,7 +4,8 @@ Tên : Lê Trí Đăng
 
 MSSV : 23020659
 
-
+demo game : https://www.youtube.com/watch?v=O3tXqzCKJSk
+logic game: https://www.youtube.com/watch?v=O3tXqzCKJSk
 # GAME INTRODUCTION
 The dodge witch là một game thuộc thể loạt platformer đánh quái ,né tránh đòn tấn công ,ăn vật phẩm và di chuyển đến điểm cuối cùng của map để chiến thắng .Với câu chuyện kể về một vị pháp sư bị đánh cắp đi rương báu vật của mình cùng với sự chỉ dẫn của vị pháp sư tập sự ,pháp sư phải sử dụng kĩ năng cầu năng lượng và khả năng tránh né của mình để thu thập lại kho báu rơi trên đường nhằm tiến đến lấy lại rương báu vật mà bản thân bị đánh cắp.
 Game này được lấy cảm hứng cũng như là được tham khảo từ series SDL2 C++ của youtuber phát triền phần mềm 123AZ:https://www.youtube.com/watch?v=q1WzniyeGTU&list=PLR7NDiX0QsfTIEQUeYCfc2MyCquX0ig9V
