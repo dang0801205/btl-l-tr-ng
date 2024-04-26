@@ -9,8 +9,9 @@ The dodge witch là một game thuộc thể loạt platformer đánh quái ,né
 Game này được lấy cảm hứng cũng như là được tham khảo từ series SDL2 C++ của youtuber phát triền phần mềm 123AZ:https://www.youtube.com/watch?v=q1WzniyeGTU&list=PLR7NDiX0QsfTIEQUeYCfc2MyCquX0ig9V
 
 # 1.GAMES START
-[background](tham khảo trên mạng):(![wizard0](https://hackmd.io/_uploads/rJmPYkdZC.jpg)
-)
+[background](tham khảo trên mạng):
+)![wizard0](https://github.com/dang0801205/btl-l-tr-ng/assets/148788265/aabfe569-79b0-45ae-8bf6-c1b93d7c0c52)
+
 Để bắt đầu trò chơi kích chuột trái vào màn hình menu có chứ "press to start " để vào game.
 # 2.GAME COMPONENTS
 **a) nhân vật ** THE WITCH **:**
