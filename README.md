@@ -17,8 +17,9 @@ Game này được lấy cảm hứng cũng như là được tham khảo từ s
 # 2.GAME COMPONENTS
 
 **a) nhân vật ** THE WITCH **:**
+![r](https://github.com/dang0801205/btl-l-tr-ng/assets/148788265/beb6eb1c-2516-4c5f-9ec2-a79a09f650ed)
 
-![l](https://hackmd.io/_uploads/SkQK5J_b0.png)
+
 Là một vị phù thủy già sống trong rừng sâu có rất nhiều của cải và các báu vật có khả năng né tránh điêu luyện và bắn cầu năng lượng. Là nhân vật chính để ngươì chơi điều khiển.
 
 **b) nhân vật ** THE APPERENTICE **:**
